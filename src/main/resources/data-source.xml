@@ -13,6 +13,12 @@
 	<!-- ======================================================================== -->
 	<!-- redis定义。 -->
 	<!-- ======================================================================== -->
+    <bean id="redisClientTemplate" class="com.robin.im.redis.RedisClientTemplate">
+        <property name="redisDataSource" ref="redisDataSource" />
+    </bean>
+    <bean id="redisDataSource" class="com.robin.im.redis.RedisDataSourceImpl">
+        <property name="shardedJedisPool" ref="shardedJedisPool" />
+    </bean>
 	<bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
 		<property name="maxActive" value="50" />
 		<property name="maxIdle" value="8" />
@@ -27,9 +33,9 @@
 		<constructor-arg index="1">
 			<list>
 				<bean class="redis.clients.jedis.JedisShardInfo">
-					<constructor-arg name="host" value="${redis_host}" />
-					<constructor-arg name="port" value="${redis_port}" />
-					<constructor-arg name="timeout" value="${redis_timeout}" />
+					<constructor-arg name="host" value="127.0.0.1" />
+					<constructor-arg name="port" value="6392" />
+					<constructor-arg name="timeout" value="2000" />
 					<constructor-arg name="weight" value="1" />
 				</bean>
 
@@ -48,8 +54,8 @@
 
 	<bean id="jedisPubSubPool" class="redis.clients.jedis.JedisPool"  scope="singleton">
 		<constructor-arg index="0" ref="jedisPubSubPoolConfig" />
-		<constructor-arg index="1" value="${redis_host_pubsub}" />
-		<constructor-arg index="2" value="${redis_port_pubsub}" />
+		<constructor-arg index="1" value="127.0.0.1" />
+		<constructor-arg index="2" value="6392" />
 		<constructor-arg index="3" value="0" />
 	</bean>
 

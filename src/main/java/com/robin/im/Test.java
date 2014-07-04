@@ -12,8 +12,7 @@ public class Test {
     /**
      * 16进制的字符串表示转成字节数组
      *
-     * @param hexString
-     *			16进制格式的字符串
+     * @param hexString	16进制格式的字符串
      * @return 转换后的字节数组
      **/
     public static byte[] hexStr2ByteArray(String hexString) {

@@ -12,10 +12,10 @@
     </appender>
 
     <appender name="SERVER_INFO_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${loggingRoot}/serverinfo.log</file>
+        <file>/usr/local/output/serverinfo.log</file>
 		<encoding>UTF-8</encoding>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<FileNamePattern>${loggingRoot}/serverinfo.%d{yyyy-MM-dd}.log</FileNamePattern>
+			<FileNamePattern>/usr/local/output/serverinfo.%d{yyyy-MM-dd}.log</FileNamePattern>
 		</rollingPolicy>
 		<append>true</append>
         <layout class="ch.qos.logback.classic.PatternLayout">
@@ -32,10 +32,10 @@
 
 
     <appender name="SERVER_WARN_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${loggingRoot}/serverwarn.log</file>
+        <file>/usr/local/output/serverwarn.log</file>
         <encoding>UTF-8</encoding>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<FileNamePattern>${loggingRoot}/serverwarn.%d{yyyyMMdd}.log
+			<FileNamePattern>/usr/local/output/serverwarn.%d{yyyyMMdd}.log
 			</FileNamePattern>
 		</rollingPolicy>
 
