@@ -1,0 +1,29 @@
+<assembly>
+	<id>appServer</id>
+	<formats>
+		<format>zip</format>
+	</formats>
+	<dependencySets>
+		<dependencySet>
+			<useProjectArtifact>true</useProjectArtifact>
+			<outputDirectory>lib</outputDirectory>
+		</dependencySet>
+	</dependencySets>
+	<fileSets>
+		<fileSet>
+			<outputDirectory>/</outputDirectory>
+			<includes>
+				<include>README.txt</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>src/main/resources/scripts</directory>
+			<outputDirectory>/bin</outputDirectory>
+			<includes>
+				<include>run.sh</include>
+				<include>run.bat</include>
+				<include>debug.sh</include>
+			</includes>
+		</fileSet>
+	</fileSets>
+</assembly>
