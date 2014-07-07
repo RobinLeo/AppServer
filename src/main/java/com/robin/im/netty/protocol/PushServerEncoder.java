@@ -33,6 +33,7 @@ public final class PushServerEncoder extends OneToOneEncoder {
             return ChannelBuffers.wrappedBuffer(msgBuffer, NULLBUFFER);
         } else if(msg instanceof Integer){
             Integer intMsg = ((Integer) msg);
+            logger.info("msg = " + intMsg);
             if(intMsg == 0x0b){
                 return HB_BUFFER;
             }

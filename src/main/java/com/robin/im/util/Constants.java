@@ -22,4 +22,8 @@ public class Constants {
     public static final int  TIMEOUT_MAX_COUNT           = 5;        // 最大超时时间
 
     public static final long PACK_ACK_TIMEOUT = 5000L;//应答超时时间
+
+    public static void main(String[] args) {
+        System.out.println(0x0101);
+    }
 }

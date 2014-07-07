@@ -2,7 +2,7 @@
 cd `dirname $0`/..
 BASE_DIR="`pwd`"
 
-JAVA_HOME=/usr/local/jdk
+JAVA_HOME=/usr/local/java
 
 echo Using BASE_DIR:   $BASE_DIR
 echo Using JAVA_HOME:  $JAVA_HOME

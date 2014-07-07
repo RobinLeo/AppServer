@@ -2,7 +2,7 @@
 cd `dirname $0`/..
 BASE_DIR="`pwd`"
 
-JAVA_HOME=/usr/local/jdk
+JAVA_HOME=/usr/local/java
 
 if [ ! -f "$JAVA_HOME/bin/java" ]; then
   echo "JAVA_HOME"

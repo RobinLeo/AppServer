@@ -187,15 +187,12 @@ public class PushServerCommandHandler extends SimpleChannelUpstreamHandler {
                     }
                 }
             } else {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("HB Can not find myconnection ,socket id=" + messageEvent.getChannel().getId());
-                }
+                logger.info("HB Can not find myconnection ,socket id=" + messageEvent.getChannel().getId());
             }
         } else {
-            if (logger.isDebugEnabled()) {
-                logger.debug("socketId=" + messageEvent.getChannel().getId() + "<==" + command.message);
-            }
+            logger.info("socketId=" + messageEvent.getChannel().getId() + "<==" + command.message);
             if (command.message.length() > 3) {
+                logger.info("receive msg ,content = " + command.message);
                 MessageManager.addReceivedMessage(handleMessage(command.message, messageEvent));
             } else {
                 logger.warn("too short message.");
@@ -209,6 +206,7 @@ public class PushServerCommandHandler extends SimpleChannelUpstreamHandler {
         long pid = -1;// package id
 
         int fid = SjsonUtil.getFIDFromMsg(msg);
+        logger.info("handle this msg:" + msg);
         MyConnection myConnection = MyConnectionListener.getMyConnectionBySocketId(channel.getId());
         if (myConnection != null) {
             //如果消息不是认证消息，并且长链接已经失效，重新进行验证，客户端使用长链接时需要将sid放置到消息体中
@@ -251,7 +249,7 @@ public class PushServerCommandHandler extends SimpleChannelUpstreamHandler {
                 }
             }
         }
-
+        logger.info("connection is null,",fid);
         switch (fid) {
             case Constants.AUTH_MSG_CODE: // 长连接鉴权
                 messagePack = new AuthMsg(msg, channel);

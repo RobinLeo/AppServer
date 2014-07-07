@@ -60,7 +60,7 @@ public class InitNetty {
 
         Channel serverChannel = bootstrap.bind(address);
         allChannels.add(serverChannel);
-
+        System.out.println("netty server is running");
         logger.info("netty start");
     }
 }

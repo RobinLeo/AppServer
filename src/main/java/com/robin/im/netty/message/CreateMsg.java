@@ -49,7 +49,7 @@ public class CreateMsg extends MessagePack {
         MyConnection myConnection = null;
         redisDao = (RedisDAO) AppServerBeanFactory.getRedisDAO();
         redisClientTemplate = (RedisClientTemplate) AppServerBeanFactory.getBean("redisClientTemplate");
-
+        log.info("createmsg....");
         rc = 1;
         uid = null;
         // 从MyConnectionListener中的connections属性中查询该socketId是否已经存在长连接，如果存在则说明该用户已经在某个客户端登录
@@ -59,6 +59,7 @@ public class CreateMsg extends MessagePack {
             if (false == myConnection.isValid()) {// 该长连接已经失效，执行下面的创建新连接
             } else {// 该长连接没有失效，验证成功
                 uid = myConnection.getChName();
+                log.info("createMsg receive msg:" + msg);
                 try {
                     JSONObject jsonObj = JSONObject.parseObject(msg);
                     FID = jsonObj.getIntValue("FID");
@@ -68,13 +69,13 @@ public class CreateMsg extends MessagePack {
                     desUid = data.getLong("DesUid");
                     srcUid = data.getLong("SrcUid");
                
-                if(desUid==null || desUid<1L){
-                    return;
-                }
-                if(srcUid == null || srcUid < 1L){
-                    return;
-                }
-                JSONObject resultDataJson = new JSONObject();
+                    if(desUid==null || desUid<1L){
+                        return;
+                    }
+                    if(srcUid == null || srcUid < 1L){
+                        return;
+                    }
+                    JSONObject resultDataJson = new JSONObject();
                     String msgId = redisDao.getMsgId().toString();
 
                     switch (type) {
@@ -114,14 +115,14 @@ public class CreateMsg extends MessagePack {
                             rc = 0;
                             break;
                     }
-                resultJson.put("RC", rc);
-                resultJson.put("TMS", tms);
-                resultDataJson.put("MsgId", msgId);
-                resultJson.put("FID", FID);
-                resultDataJson.put("Type", type);
-                resultJson.put("Data", resultDataJson);
+                    resultJson.put("RC", rc);
+                    resultJson.put("TMS", tms);
+                    resultDataJson.put("MsgId", msgId);
+                    resultJson.put("FID", FID);
+                    resultDataJson.put("Type", type);
+                    resultJson.put("Data", resultDataJson);
                 } catch (Exception e) {
-                    log.error(e.getMessage(), e);
+                    log.error("parse msg error", e);
                     return;
                 }
             }

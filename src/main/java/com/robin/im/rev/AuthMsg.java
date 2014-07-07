@@ -124,9 +124,7 @@ public class AuthMsg extends MessagePack {
                         }
                     }
                 } else {
-                    if (log.isDebugEnabled()) {
-                        log.debug("sid invalid, sid=" + sid);
-                    }
+                       log.info("sid invalid, sid=" + sid);
                 }
             }
         } else if (0 != rc) {
