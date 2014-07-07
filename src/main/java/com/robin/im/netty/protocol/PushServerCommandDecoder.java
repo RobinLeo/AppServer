@@ -50,14 +50,13 @@ public final class PushServerCommandDecoder extends FrameDecoder {
         }
         ChannelBuffer frame;
         frame = buffer.readBytes(pos);
+        log.info("receive byte:" + frame.getByte(0));
         if (Constants.HEARTBEAT_ACK == frame.getByte(0)) {//"0xB0"
             return CommandMessage.command(0);
         }
         CommandMessage cmd = CommandMessage.command(1);
         cmd.message = frame.toString(UTF8);
-        if(log.isDebugEnabled()){
-            log.debug("recv message:" + cmd.message);
-        }
+        log.info("recv message:" + cmd.message);
         return cmd;
     }
 }
