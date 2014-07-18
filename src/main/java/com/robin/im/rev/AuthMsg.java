@@ -46,7 +46,7 @@ public class AuthMsg extends MessagePack {
 
     private static final String AUTH_UNKNOW_ERROR = "{\"FID\":1545,\"RC\":-1}";
 
-    public static final String  RELOGIN_OTHER_IP  = "{\"FID\":1546,\"DES\":\"relogin\"}";
+    public static final String  AUTH_RELOGIN  = "{\"FID\":1546,\"DES\":\"relogin\"}";
 
     private static final String MESSAGE_NAME      = "AuthMsg";                             // 消息名称
 
@@ -106,7 +106,7 @@ public class AuthMsg extends MessagePack {
                                     Channel channel2 = myConnection.getChannel();
                                     SocketAddress ip2 = channel2.getRemoteAddress();
                                     if(!ip.toString().equals(ip2.toString())){
-                                        oldConnection.write(RELOGIN_OTHER_IP);
+                                        oldConnection.write(AUTH_RELOGIN);
                                     }
                                 }
                             }else{
