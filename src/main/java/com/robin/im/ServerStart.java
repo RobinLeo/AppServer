@@ -4,7 +4,7 @@ import com.robin.im.netty.message.MessageManager;
 
 /**
  * Created with IntelliJ IDEA.
- * User: liuhouxiang@1986@gmail.com.
+ * User: liuhouxiang1986@gmail.com.
  * Date: 2014/7/3 13:14
  * Project: AppServer
  */
@@ -26,7 +26,6 @@ public class ServerStart {
 
         //启动服务
         MessageManager.start();
-
 
     }
 }

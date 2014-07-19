@@ -58,7 +58,7 @@ public class MessageManager {
         pool.submit(new MsgReceiveThread(latch));//处理接收到的消息的线程
         pool.submit(new MsgSendThread(latch));//处理发送消息的线程
         pool.submit(new MsgRetryThread(latch));//处理重发消息的线程
-        latch.countDown();
+        latch.countDown();//子线程开始工作
     }
 
     /**
@@ -81,7 +81,7 @@ public class MessageManager {
         @Override
         public void run() {
             try {
-                latch.await();
+                latch.await();//等待命令开始执行
                 while (true){
                     MessagePack messagePack = messagesToHandle(RECEIVED_QUEUE_FLAG);
                     if(messagePack != null){
@@ -105,7 +105,7 @@ public class MessageManager {
         @Override
         public void run() {
             try {
-                latch.await();
+                latch.await();//等待命令开始执行
                 while (true){
                     MessagePack messagePack = messagesToHandle(SEND_QUEUE_FLAG);
                     if(messagePack != null){
@@ -127,7 +127,7 @@ public class MessageManager {
         @Override
         public void run() {
             try {
-                latch.await();
+                latch.await();//等待命令开始执行
                 while (true){
                     MessagePack messagePack = messagesToHandle(RETRY_QUEUE_FLAG);
                     if(messagePack != null){

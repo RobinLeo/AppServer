@@ -27,7 +27,6 @@ public class InitLog {
 
             logConfigurators[i].configure(logConfigurationResource,params);
 
-            System.out.println("log system ["+logSystems[i]+"] is inited");
         }
     }
 

@@ -39,9 +39,11 @@ public final class PushServerCommandDecoder extends FrameDecoder {
     @Override
     protected Object decode(ChannelHandlerContext ctx, Channel channel, ChannelBuffer buffer) throws Exception {
         ChannelBuffer in = buffer.slice();
+        //检查ChannelBuffer中的字节数，如果ChannelBuffer可读的字节数少于2,则返回null等待下次读事件。我们发送的最小数据是心跳，2个字节
         if (in.readableBytes() < MIN_BYTES_LINE)
             return null;
         int pos = in.bytesBefore(NULL_DELIMITER);
+        //过滤0x00
         if (-1 == pos) {
             return null;
         } else if (0 == pos) {
@@ -50,8 +52,7 @@ public final class PushServerCommandDecoder extends FrameDecoder {
         }
         ChannelBuffer frame;
         frame = buffer.readBytes(pos);
-        log.info("receive byte:" + frame.getByte(0));
-        if (Constants.HEARTBEAT_ACK == frame.getByte(0)) {//"0xB0"
+        if (Constants.HEARTBEAT_ACK == frame.getByte(0)) {//"0xB0"代表客户端心跳响应
             return CommandMessage.command(0);
         }
         CommandMessage cmd = CommandMessage.command(1);

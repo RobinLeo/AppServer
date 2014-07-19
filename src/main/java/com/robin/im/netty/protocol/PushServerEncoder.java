@@ -33,8 +33,7 @@ public final class PushServerEncoder extends OneToOneEncoder {
             return ChannelBuffers.wrappedBuffer(msgBuffer, NULLBUFFER);
         } else if(msg instanceof Integer){
             Integer intMsg = ((Integer) msg);
-            logger.info("msg = " + intMsg);
-            if(intMsg == 0x0b){
+            if(intMsg == 0x0b){//发送心跳到客户端
                 return HB_BUFFER;
             }
             ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
