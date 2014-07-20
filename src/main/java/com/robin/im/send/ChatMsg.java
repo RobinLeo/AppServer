@@ -99,7 +99,7 @@ public class ChatMsg extends MessagePack {
                         if (rpid <= 0) {
                             rpid = Long.parseLong(msgId);
                         }
-
+                        //rpid使用msgId作为响应编号，用于接收客户端发送接收响应
                         writeFuture = destConnection.write(SjsonUtil.addSendSequece(writeJson.toJSONString(), rpid));
                         RpidACKListener rpidACKListener = new RpidACKListener(this);
                         writeFuture.addListener(rpidACKListener);

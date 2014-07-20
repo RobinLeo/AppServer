@@ -20,13 +20,11 @@ public class TimerWorkerManager {
     public void addWorker(TimerWorker worker){
         boolean success = timerWorkerQueue.add(worker);
         if(success){
-            if(startedThreadCounter < 10){
+            if(startedThreadCounter < 10){//最多创建10个心跳工作线程
                 pool.submit(new WorkingThread(latch));
                 startedThreadCounter++;
             } else {
-                if(log.isTraceEnabled()){
-                    log.trace("working thread full");
-                }
+                log.info("working thread full");
             }
         }
     }
@@ -43,7 +41,7 @@ public class TimerWorkerManager {
     
     public void init(){
         log.info("TimerWorkerManager START");
-        pool = Executors.newCachedThreadPool();
+        pool = Executors.newCachedThreadPool();//对于执行很多短期异步任务的程序而言，这些线程池通常可提高程序性能
         pool.submit(new WorkingThread(latch));
         latch.countDown();
     }

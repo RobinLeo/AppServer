@@ -6,7 +6,7 @@ import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
- * User: liuhouxiang@1986@gmail.com.
+ * User: liuhouxiang1986@gmail.com.
  * Date: 2014/7/3 15:02
  * Project: AppServer
  */

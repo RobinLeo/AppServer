@@ -173,18 +173,14 @@ public class PushServerCommandHandler extends SimpleChannelUpstreamHandler {
                     messageEvent.getChannel().getId());
             if (myConnection != null) {
                 myConnection.incPackCount();
-                if (logger.isTraceEnabled()) {
-                    logger.trace("<==HB response from " + myConnection.getChName());
-                }
+                logger.info("<==HB response from " + myConnection.getChName());
                 if (myConnection.isValid()) {
                     //心跳确认信令的逻辑
                     myConnection.reFreshTime();
                     myConnection.setWaitHbAck(false);
                 } else {
                     myConnection.close();
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Find a connection is not valid,but send HB!");
-                    }
+                    logger.info("Find a connection is not valid,but send HB!");
                 }
             } else {
                 logger.info("HB Can not find myconnection ,socket id=" + messageEvent.getChannel().getId());

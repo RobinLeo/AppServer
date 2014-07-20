@@ -91,7 +91,6 @@ public class DateUtil {
 	 * This method attempts to convert an Oracle-formatted date
 	 * in the form dd-MMM-yyyy to yyyy-mm-dd HH24:mm:ss.
 	 *
-	 * @param aDate date from database as a string
 	 * @return formatted string for the ui
 	 */
 	public static String getOraNowStr() {
@@ -222,8 +221,7 @@ public class DateUtil {
 
 			aDate = convertStringToDate(getDatePattern(), strDate);
 		} catch (ParseException pe) {
-			log.error("Could not convert '" + strDate
-					+ "' to a date, throwing exception");
+			log.error("Could not convert '" + strDate + "' to a date, throwing exception");
 			pe.printStackTrace();
 			throw new ParseException(pe.getMessage(), pe.getErrorOffset());
 		}
@@ -282,8 +280,7 @@ public class DateUtil {
 	/**
      * 将日期转换为1970-01-01后的天数
      *
-     * @param Date
-     *            theDate 要计算天数的日期
+     * @param theDate 要计算天数的日期
      * @return int 所传入日期与1970-01-01相差的天数
      */
     public static int dateToDay(Date theDate) {
@@ -296,8 +293,7 @@ public class DateUtil {
     /**
      * 将1970-01-01后的天数转换为日期
      *
-     * @param int
-     *            要取的日期与1970-01-01相差的天数
+     * @param day 要取的日期与1970-01-01相差的天数
      * @return Date theDate 与1970-01-01相差相应天数的日期
      */
     public static Date dayToDate(int day) {

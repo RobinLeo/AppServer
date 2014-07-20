@@ -2,7 +2,7 @@ package com.robin.im.rev;
 
 /**
  * Created with IntelliJ IDEA.
- * User: liuhouxiang@1986@gmail.com.
+ * User: liuhouxiang1986@gmail.com.
  * Date: 2014/7/3 21:00
  * Project: AppServer
  */
@@ -48,11 +48,11 @@ public class AuthMsg extends MessagePack {
 
     public static final String  AUTH_RELOGIN  = "{\"FID\":1546,\"DES\":\"relogin\"}";
 
-    private static final String MESSAGE_NAME      = "AuthMsg";                             // 消息名称
+    private static final String MESSAGE_NAME      = "AuthMsg";// 消息名称
 
     RedisDAO redisDao;
 
-    private int                 rc                = 1;
+    private int rc = 1;//0 表示鉴权成功，1表示鉴权失败，-1表示未知错误，2表示需要重新登陆
 
     // private String msr = null;//user=长连接,business=业务逻辑,event=事件处理,file=文件处理，null的话默认是长连接
 
@@ -64,16 +64,14 @@ public class AuthMsg extends MessagePack {
     public void onHandler() {
 
         MyConnection myConnection = null;
-        rc = 1;
         uid = null;
         // 从MyConnectionListener中的connections属性中查询该socketId是否已经存在长连接，如果存在则说明该用户已经在某个客户端登录
         myConnection = MyConnectionListener.getMyConnectionBySocketId(channel.getId());// 根据socketId获取当前用户是否已经在一台机器上登录
+
         if (myConnection != null) {
             uid = myConnection.getChName();
-        }
-        if (myConnection != null) {
-            //客户端鉴权时需要将sid放到msg中
-            String sid = SjsonUtil.getSIDFromMsg(msg);// 获取sessionId
+            //客户端鉴权时需要将sid放到msg中，客户端通过短链接进行登陆，服务端会将sid作为响应结果的一部分返回，并且将sid保存在redis
+            String sid = SjsonUtil.getSIDFromMsg(msg);//从参数中截取sessionId
             if (StringUtils.isNotBlank(sid)) {
                 redisDao = AppServerBeanFactory.getRedisDAO();
                 // 根据sid去redis里查询该sid是否有效
@@ -84,50 +82,56 @@ public class AuthMsg extends MessagePack {
                     uid = userJson.getLong("id").toString();
 
                     if (StringUtils.isNotBlank(uid)) {
-                        // 把connection 设置成有效
-                        myConnection.setValid(true);
-                        myConnection.setChName(uid);
                         // oldConnection不为空说明同一个用户多处登录，将前一个用户踢下线。
                         MyConnection oldConnection = MyConnectionListener.addNamedConnection(myConnection);
 
                         if (oldConnection != null) {
                             boolean isSameUser = myConnection.getChannel().getId().equals(oldConnection.getChannel().getId());
-
+                            //同一个账号，更换设备登陆，将前一个设备上的账号踢下线
                             if(!isSameUser){
-                                if (log.isDebugEnabled()) {
                                     log.debug(uid + " login in other IP.old socked id=" + oldConnection.getID()
                                             + ",now socket id=" + channel.getId());
-                                }
+                                //将前一个长链接从长链接池子中删掉
                                 MyConnectionListener.connectionDestroyed(oldConnection.getID());
                                 oldConnection.setReplaced(true);
+                                //如果两个长链接来自不同的两个ip，则将前一个踢下线
                                 if(oldConnection.getChannel() != null ){
                                     Channel channel1 = oldConnection.getChannel();
                                     SocketAddress ip = channel1.getRemoteAddress();
                                     Channel channel2 = myConnection.getChannel();
                                     SocketAddress ip2 = channel2.getRemoteAddress();
                                     if(!ip.toString().equals(ip2.toString())){
-                                        oldConnection.write(AUTH_RELOGIN);
+                                        oldConnection.write(AUTH_RELOGIN);//将之前设备上的账号踢下线
                                     }
                                 }
                             }else{
+                                //同一账号两个长链接，在此仅作日志处理，客户端应该会控制长链接数量
                                 log.warn("same user auth, uid=" + uid);
                             }
-
+                            // 把最新connection设置成有效
+                            myConnection.setValid(true);
+                            myConnection.setChName(uid);
                         } else {
-                            // 此时已经将当前长连接设置为有效，不用重复设置
+                            // 把最新connection设置成有效
+                            myConnection.setValid(true);
+                            myConnection.setChName(uid);
                         }
                         rc = 0;
 
                     } else {
-                        if (log.isDebugEnabled()) {
-                            log.debug("get userinfo failed， sid=" + sid + ",client=" + myConnection.getRemoteAddress());
-                        }
+                        log.info("get userinfo failed， sid=" + sid + ",client=" + myConnection.getRemoteAddress());
+                        rc = 2;
                     }
                 } else {
                        log.info("sid invalid, sid=" + sid);
+                        rc = 2;
                 }
+            }else{
+                log.info("user not login,relogin");
+                rc = 2;
             }
         } else if (0 != rc) {
+            log.info("can not find valid connection,channelId:" + channel.getId());
             rc = -1;
         }
 
@@ -143,15 +147,17 @@ public class AuthMsg extends MessagePack {
 
             if (0 == rc) {
                 writeFuture = channel.write(AUTH_SUCCESS);
-                //鉴权成功，开始心跳线程用来维持长链接
+                //鉴权成功，开始心跳线程用来维持长链接，自此开始服务端和客户端的心跳检测
                 Timer.addTimer(new HeartBeatWorker(uid, myConnection, DateUtil.getCacheNow()));
-
                 // 验证成功了，需要推送离线消息
                 pushOfflineMsg(uid);
-                log.info("auth success,ph=" + uid + ",socketId=" + channel.getId() + ",addr=" + channel.getRemoteAddress());
+                log.info("auth success,user=" + uid + ",socketId=" + channel.getId() + ",addr=" + channel.getRemoteAddress());
             } else if (1 == rc) {
                 writeFuture = channel.write(AUTH_FAILED);
                 log.info("auth failed,msg=" + msg + ",client=" + channel.getRemoteAddress());
+            } else if (2 == rc) {
+                writeFuture = channel.write(AUTH_RELOGIN);
+                log.info("user relogin,msg=" + msg + ",client=" + channel.getRemoteAddress());
             } else {
                 writeFuture = channel.write(AUTH_UNKNOW_ERROR);
                 log.info("auth error,msg=" + msg);
@@ -170,18 +176,15 @@ public class AuthMsg extends MessagePack {
                 }
             });
         } catch (Exception e) {
-            log.error("auth exception， e:" + e);
+            log.error("auth exception， e:",e);
         }
     }
 
     /**
-     * 客户端上线了，需要推送离线消息
+     * 客户端长链接鉴权充公，需要推送离线消息
      */
     private void pushOfflineMsg(String uid) {
-
         Set<Tuple> msgSet = redisDao.getOfflineMsgIds(uid);
-
-
         for (Tuple t : msgSet) {
             String msgId = t.getElement();
             String content = redisDao.getMessageByMsgId(msgId);
@@ -189,14 +192,12 @@ public class AuthMsg extends MessagePack {
                 try {
                     MessageManager.addSendMessage(new ChatMsg(JSONObject.parseObject(content), msgId));
                 } catch (Exception e) {
-                    log.error("push offline msg error" + e.getCause() + "," + content);
+                    log.warn("push offline msg error" + e.getCause() + "," + content);
                 }
-            } else {
+            } else {//一般离线消息保存七天，如果消息过期，则删除离线队列中过期消息
                 redisDao.removeOfflineMsg(uid, msgId);
                 redisDao.removeMessageByMsgId(msgId);
-                if (log.isDebugEnabled()) {
-                    log.debug("msgId: " + msgId + " content is null");
-                }
+                log.debug("msgId: " + msgId + " content is null");
             }
         }
     }

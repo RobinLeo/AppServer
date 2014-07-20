@@ -4,11 +4,11 @@ public final class KeyGeneration {
 
     public static final String MSG_ID_GENERATOR     = "MSG_ID_GEN";
 
-    public static int          SESSION_EXPIRED_TIME = 18000;       // 60*60
+    public static int SESSION_EXPIRED_TIME = 18000;// 60*60*5 5个小时
 
-    public static int          MSG_EXPIRED_TIME     = 604800;      // (7*24*60*60)一周
+    public static int MSG_EXPIRED_TIME = 604800;// (7*24*60*60)一周
 
-    public static int          RPID_EXPIRED_TIME    = 60;
+    public static int RPID_EXPIRED_TIME = 60;//rpid响应超时时间
 
     enum KeyConstant {
         SESSION_KEY("S_K:"), OFFLINE_MSG_KEY("OFFMSG_K:"), HOST_MSG_KEY("MSG_K:"), USER_PIDS("UP#"),WAIT_4_ACK("RPID_K:");
